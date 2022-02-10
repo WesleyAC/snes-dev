@@ -54,16 +54,18 @@ start:
 	sta VMAIN
 	ldx #VRAM_CHARS
 	stx VMADDL
-	ldx #0
-@charset_loop:
-	lda charset,x
-	sta VMDATAL
-	inx
-	lda charset,x
-	sta VMDATAH
-	inx
-	cpx #(charset_end - charset)
-	bne @charset_loop
+	lda #%00000001
+	sta DMAP0
+	lda #<VMDATAL
+	sta BBAD0
+	ldx #.loword(charset)
+	stx A1T0L
+	lda #^charset
+	sta A1B0
+	ldx #(charset_end - charset)
+	stx DAS0L
+	lda #1
+	sta MDMAEN
 
 	; Show BG1
 	lda #%00000001
