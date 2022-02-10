@@ -62,15 +62,6 @@ start:
 	cpx #(charset_end - charset)
 	bne @charset_loop
 
-	; Write a tile to position (1, 1)
-	TILE_X = 1
-	TILE_Y = 1
-	ldx #(VRAM_BG1 + (TILE_Y * 32) + TILE_X)
-	stx VMADDL
-	lda #$01 ; tile number
-	sta VMDATAL
-	stz VMDATAH
-
 	; Show BG1
 	lda #%00000001
 	sta TM
@@ -78,8 +69,21 @@ start:
 	lda #$0f
 	sta INIDISP
 
-busywait:
-	bra busywait
+	lda #%00000001
+	sta NMITIMEN
+
+mainloop:
+	lda JOY1H
+	bit #%00000100 ; Down button
+	beq @down_not_pressed
+		ldx #(VRAM_BG1 + (1 * 32) + 1)
+		stx VMADDL
+		lda #$01 ; tile number
+		sta VMDATAL
+		stz VMDATAH
+	@down_not_pressed:
+
+	bra mainloop
 
 nmi:
 	bit RDNMI
